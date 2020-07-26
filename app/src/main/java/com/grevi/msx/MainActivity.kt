@@ -7,13 +7,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.grevi.msx.ui.MemberAdapter
 import com.grevi.msx.ui.MemberViewModel
-import com.grevi.msx.utils.Status
-import com.grevi.msx.utils.ViewModelFactory
-import com.grevi.msx.utils.toast
+import com.grevi.msx.utils.*
 import kotlinx.android.synthetic.main.activity_main.*
 import org.kodein.di.DIAware
 import org.kodein.di.android.di
 import org.kodein.di.instance
+import java.lang.Exception
 
 class MainActivity : AppCompatActivity(), DIAware {
 
@@ -36,19 +35,22 @@ class MainActivity : AppCompatActivity(), DIAware {
         memberAdapter = MemberAdapter()
         rv_member.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         rv_member.adapter = memberAdapter
-        memberViewModel.getMember().observe(this, Observer {
-            when(it.status) {
-                Status.SUCCESS -> {
-                    it.data?.let {
-                        memberAdapter.addItem(it.result)
-                        memberAdapter.notifyDataSetChanged()
+        try {
+            memberViewModel.getMember().observe(this, Observer {
+                when(it.status) {
+                    Status.SUCCESS -> {
+                        it.data?.let {
+                            memberAdapter.addItem(it.result)
+                            memberAdapter.notifyDataSetChanged()
+                        }
                     }
+                    Status.LOADING -> toast(this, null)
+                    Status.ERROR -> toast(this, it.msg)
                 }
-                Status.LOADING -> toast(this, null)
-                Status.ERROR -> toast(this, it.msg)
-                Status.UNAVAILABLE -> toast(this, it.msg)
-            }
-        })
+            })
+        } catch (e : NoConnectionException) {
+            toast(this, "No Connection")
+        }
     }
 
 }

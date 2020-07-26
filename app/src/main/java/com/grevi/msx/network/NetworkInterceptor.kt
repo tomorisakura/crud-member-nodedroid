@@ -4,39 +4,40 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
-import androidx.annotation.RequiresApi
-import com.grevi.msx.utils.NoInternetException
-import com.grevi.msx.utils.ResultResponse
-import com.grevi.msx.utils.Status
+import com.grevi.msx.utils.NoConnectionException
 import okhttp3.Interceptor
 import okhttp3.Response
-import java.io.IOException
 
 class NetworkInterceptor(context: Context) : Interceptor {
 
     val appContext = context.applicationContext
 
-
+    @Suppress("DEPRECATION")
     private fun isAvailable() : Boolean {
-        val cm = appContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        var result = false
+        val connectivityManager = appContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val netInfo = cm.activeNetwork ?: return false
-            val activeNetwork = cm.getNetworkCapabilities(netInfo) ?: return false
-            return when {
-                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
-                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
-                else -> false
-            }
+
+            val netInfo = connectivityManager.activeNetwork
+            val connection = connectivityManager.getNetworkCapabilities(netInfo)
+             result = connection != null && (connection.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                     connection.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR))
         } else {
-            val netInfo = cm.activeNetworkInfo ?: return false
-            return netInfo.isConnected
+            val activeNetwork = connectivityManager.activeNetworkInfo
+            if (activeNetwork != null) {
+                result = (activeNetwork.type == ConnectivityManager.TYPE_WIFI ||
+                activeNetwork.type == ConnectivityManager.TYPE_MOBILE)
+            }
         }
+
+        return result
     }
 
     override fun intercept(chain: Interceptor.Chain): Response {
-        if (!isAvailable()) {
-            throw NoInternetException("Internet Unavailable")
+        return if (!isAvailable()) {
+            throw NoConnectionException()
+        }else {
+            chain.proceed(chain.request())
         }
-        return chain.proceed(chain.request())
     }
 }

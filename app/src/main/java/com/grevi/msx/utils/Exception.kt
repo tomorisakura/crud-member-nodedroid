@@ -2,5 +2,10 @@ package com.grevi.msx.utils
 
 import java.io.IOException
 
-class NoInternetException(msg : String?) : IOException(msg)
+open class NoConnectionException : IOException() {
+    override val message: String?
+        get() = "No Connection"
+}
+
+
 class APIException(msg: String?) : IOException(msg)

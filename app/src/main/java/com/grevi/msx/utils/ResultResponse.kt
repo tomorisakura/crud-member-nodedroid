@@ -15,9 +15,6 @@ data class ResultResponse<out T>(val status: Status, val data : T? , val msg : S
         fun <T> error(data: T?, msg: String?) : ResultResponse<T> {
           return ResultResponse(Status.ERROR, data, msg)
         }
-        fun <T> unavailable(data : T? = null, msg: String?) : ResultResponse<T> {
-            return  ResultResponse(Status.UNAVAILABLE, data, msg)
-        }
     }
 
 }
@@ -25,8 +22,7 @@ data class ResultResponse<out T>(val status: Status, val data : T? , val msg : S
 enum class Status{
     SUCCESS,
     LOADING,
-    ERROR,
-    UNAVAILABLE
+    ERROR
 }
 
 //public component
