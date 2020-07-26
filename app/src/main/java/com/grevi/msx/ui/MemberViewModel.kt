@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.grevi.msx.model.Member
+import com.grevi.msx.network.response.MemberResponse
 import com.grevi.msx.repos.Repository
 import com.grevi.msx.utils.NoInternetException
 import com.grevi.msx.utils.ResultResponse
@@ -18,9 +19,9 @@ import java.lang.Exception
 
 class MemberViewModel(private  val repos: Repository) : ViewModel() {
 
-    private val memberData : MutableLiveData<ResultResponse<List<Member>>> = MutableLiveData()
+    private val memberData : MutableLiveData<ResultResponse<MemberResponse>> = MutableLiveData()
 
-    fun getMember() : LiveData<ResultResponse<List<Member>>> {
+    fun getMember() : LiveData<ResultResponse<MemberResponse>> {
         viewModelScope.launch(Dispatchers.IO) {
             val data = repos.getMember()
             memberData.postValue(ResultResponse.loading(null, "Loading"))

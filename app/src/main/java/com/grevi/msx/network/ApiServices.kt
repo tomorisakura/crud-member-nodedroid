@@ -1,6 +1,7 @@
 package com.grevi.msx.network
 
 import com.grevi.msx.model.Member
+import com.grevi.msx.network.response.MemberResponse
 import com.grevi.msx.utils.Constant
 import okhttp3.OkHttpClient
 import retrofit2.Response
@@ -12,7 +13,7 @@ import java.util.concurrent.TimeUnit
 interface ApiServices {
 
     @GET("/api/member")
-    suspend fun getMember() : Response<List<Member>>
+    suspend fun getMember() : Response<MemberResponse>
 
 
     companion object {
