@@ -18,6 +18,7 @@ class MemberAdapter : RecyclerView.Adapter<MemberAdapter.MemberViewHolder>() {
                 it.name.text = member.name
                 it.age.text = member.age.toString()
                 it.address.text = member.address
+                it.hobby.text = member.hobby
             }
         }
     }

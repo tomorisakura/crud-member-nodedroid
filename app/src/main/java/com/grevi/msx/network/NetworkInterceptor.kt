@@ -12,7 +12,6 @@ class NetworkInterceptor(context: Context) : Interceptor {
 
     val appContext = context.applicationContext
 
-    @Suppress("DEPRECATION")
     private fun isAvailable() : Boolean {
         var result = false
         val connectivityManager = appContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager

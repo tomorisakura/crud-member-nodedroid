@@ -1,18 +1,17 @@
-package com.grevi.msx
+package com.grevi.msx.ui
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.grevi.msx.ui.MemberAdapter
-import com.grevi.msx.ui.MemberViewModel
+import com.grevi.msx.R
 import com.grevi.msx.utils.*
 import kotlinx.android.synthetic.main.activity_main.*
 import org.kodein.di.DIAware
 import org.kodein.di.android.di
 import org.kodein.di.instance
-import java.lang.Exception
 
 class MainActivity : AppCompatActivity(), DIAware {
 
@@ -29,6 +28,7 @@ class MainActivity : AppCompatActivity(), DIAware {
 
         memberViewModel = ViewModelProvider(this, factory).get(MemberViewModel::class.java)
         prepareView()
+        addItem()
     }
 
     private fun prepareView() {
@@ -50,6 +50,13 @@ class MainActivity : AppCompatActivity(), DIAware {
             })
         } catch (e : NoConnectionException) {
             toast(this, "No Connection")
+        }
+    }
+
+    private fun addItem() {
+        btn_add.setOnClickListener {
+            val intent = Intent(this, PostActivity::class.java)
+            startActivity(intent)
         }
     }
 

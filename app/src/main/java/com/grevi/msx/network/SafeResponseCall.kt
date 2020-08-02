@@ -12,7 +12,7 @@ open class SafeResponseCall {
         var output : T? = null
         when(result) {
             is Output.Success -> output = result.data
-            is Output.Error -> ResultResponse.error(null, "Error getting server ${result.exception}")
+            is Output.Error -> throw APIException("Cant get result")
         }
         return output
     }
