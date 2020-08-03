@@ -1,33 +1,48 @@
 package com.grevi.msx.ui
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.widget.Toast
-import androidx.core.widget.addTextChangedListener
-import com.google.android.material.textfield.TextInputLayout
+import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProvider
 import com.grevi.msx.R
+import com.grevi.msx.databinding.ActivityPostBinding
+import com.grevi.msx.utils.Auth
+import com.grevi.msx.utils.PostViewModelFactory
+import com.grevi.msx.utils.toast
 import kotlinx.android.synthetic.main.activity_post.*
+import org.kodein.di.DIAware
+import org.kodein.di.android.di
+import org.kodein.di.instance
 
-class PostActivity : AppCompatActivity() {
+class PostActivity : AppCompatActivity(), DIAware, Auth {
+
+    private lateinit var postViewModel: PostViewModel
+
+    override val di by di()
+
+    private val factory : PostViewModelFactory by instance<PostViewModelFactory>()
+
+    private lateinit var binding : ActivityPostBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_post)
-        setPost()
+        supportActionBar?.title = "Post Member"
+        postViewModel = ViewModelProvider(this, factory).get(PostViewModel::class.java)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_post)
+        binding.viewModel = postViewModel
+        postViewModel.listener = this
+        prepareButton()
     }
 
-    private fun setPost() {
-        var name  = p_name.editText?.text
-        var age = p_age.editText?.text
-        var address = p_address.editText?.text
-        var hobby = p_hobby.editText?.text
+    private fun prepareButton() {
 
         ed_age.addTextChangedListener(object : TextWatcher{
             override fun afterTextChanged(p0: Editable) {
                 if (p0.length > p_age.counterMaxLength) {
-                    p_age.error ="Umur not valid"
+                    p_age.error ="Age is not valid"
                 } else {
                     p_age.error = null
                 }
@@ -42,23 +57,16 @@ class PostActivity : AppCompatActivity() {
             }
 
         })
-
-
-        btn_post.setOnClickListener {
-
-            if (name.isNullOrBlank() && age.isNullOrBlank()) {
-                toast("Field Name and Age must be not empty !")
-            } else if (address.isNullOrBlank() && hobby.isNullOrBlank()) {
-                toast("Field Address and Hobby must be not empty !")
-            } else {
-                toast("Posting")
-            }
-
-        }
     }
 
-    private fun toast(msg : String) {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+    override fun toastTest(msg: String) {
+        toast(this, msg)
+    }
+
+    override fun success() {
+        val intent = Intent(this, MainActivity::class.java)
+        startActivityForResult(intent, 1)
+        finish()
     }
 
 }

@@ -25,10 +25,10 @@ class MainActivity : AppCompatActivity(), DIAware {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         memberViewModel = ViewModelProvider(this, factory).get(MemberViewModel::class.java)
         prepareView()
         addItem()
+        refreshLayout()
     }
 
     private fun prepareView() {
@@ -39,12 +39,13 @@ class MainActivity : AppCompatActivity(), DIAware {
             memberViewModel.getMember().observe(this, Observer {
                 when(it.status) {
                     Status.SUCCESS -> {
+                        swipe.isRefreshing = false
                         it.data?.let {
                             memberAdapter.addItem(it.result)
                             memberAdapter.notifyDataSetChanged()
                         }
                     }
-                    Status.LOADING -> toast(this, null)
+                    Status.LOADING -> swipe.isRefreshing = true
                     Status.ERROR -> toast(this, it.msg)
                 }
             })
@@ -53,10 +54,23 @@ class MainActivity : AppCompatActivity(), DIAware {
         }
     }
 
+    override fun startActivityForResult(intent: Intent?, requestCode: Int) {
+        super.startActivityForResult(intent, requestCode)
+        if (requestCode == 1) {
+            refreshLayout()
+        }
+    }
+
     private fun addItem() {
         btn_add.setOnClickListener {
             val intent = Intent(this, PostActivity::class.java)
             startActivity(intent)
+        }
+    }
+
+    private fun refreshLayout() {
+        swipe.setOnRefreshListener {
+            prepareView()
         }
     }
 

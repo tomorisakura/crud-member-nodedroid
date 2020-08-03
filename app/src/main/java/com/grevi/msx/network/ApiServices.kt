@@ -7,13 +7,23 @@ import okhttp3.OkHttpClient
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
+import retrofit2.http.POST
 import java.util.concurrent.TimeUnit
 
 interface ApiServices {
 
     @GET("/api/member")
     suspend fun getMember() : Response<MemberResponse>
+
+    @FormUrlEncoded
+    @POST("/api/member")
+    suspend fun postMember(@Field("name") name : String,
+                           @Field("age") age : Int,
+                           @Field("address") address : String,
+                           @Field("hobby") hobby : String) : Response<MemberResponse>
 
 
     companion object {
