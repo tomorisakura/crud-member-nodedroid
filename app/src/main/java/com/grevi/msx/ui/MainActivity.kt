@@ -7,6 +7,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.grevi.msx.R
+import com.grevi.msx.model.Member
 import com.grevi.msx.utils.*
 import kotlinx.android.synthetic.main.activity_main.*
 import org.kodein.di.DIAware
@@ -43,12 +44,16 @@ class MainActivity : AppCompatActivity(), DIAware {
                         it.data?.let {
                             memberAdapter.addItem(it.result)
                             memberAdapter.notifyDataSetChanged()
+                            it.result.forEach{item ->
+                                prepareItem(item)
+                            }
                         }
                     }
                     Status.LOADING -> swipe.isRefreshing = true
                     Status.ERROR -> toast(this, it.msg)
                 }
             })
+
         } catch (e : NoConnectionException) {
             toast(this, "No Connection")
         }
@@ -61,10 +66,21 @@ class MainActivity : AppCompatActivity(), DIAware {
         }
     }
 
+    private fun prepareItem(member: Member) {
+        memberAdapter.itemClicked(object : MemberAdapter.OnItemClick{
+            override fun itemClicked(member: Member) {
+                val intent = Intent(this@MainActivity, ItemActivity::class.java)
+                intent.putExtra(ItemActivity.member, member)
+                startActivity(intent)
+            }
+
+        })
+    }
+
     private fun addItem() {
         btn_add.setOnClickListener {
             val intent = Intent(this, PostActivity::class.java)
-            startActivity(intent)
+            startActivityForResult(intent, 2)
         }
     }
 

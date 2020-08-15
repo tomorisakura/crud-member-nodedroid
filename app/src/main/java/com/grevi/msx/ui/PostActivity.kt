@@ -37,6 +37,16 @@ class PostActivity : AppCompatActivity(), DIAware, Auth {
         prepareButton()
     }
 
+    override fun toastTest(msg: String) {
+        toast(this, msg)
+    }
+
+    override fun success() {
+        val intent = Intent(this, MainActivity::class.java)
+        startActivityForResult(intent, 1)
+        finish()
+    }
+
     private fun prepareButton() {
 
         ed_age.addTextChangedListener(object : TextWatcher{
@@ -57,16 +67,6 @@ class PostActivity : AppCompatActivity(), DIAware, Auth {
             }
 
         })
-    }
-
-    override fun toastTest(msg: String) {
-        toast(this, msg)
-    }
-
-    override fun success() {
-        val intent = Intent(this, MainActivity::class.java)
-        startActivityForResult(intent, 1)
-        finish()
     }
 
 }

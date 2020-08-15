@@ -12,6 +12,16 @@ class MemberAdapter : RecyclerView.Adapter<MemberAdapter.MemberViewHolder>() {
 
     private val memberList : ArrayList<Member> = arrayListOf()
 
+    private var onItemClick : OnItemClick? = null
+
+    interface OnItemClick {
+        fun itemClicked(member: Member)
+    }
+
+    fun itemClicked(onItemClick: OnItemClick) {
+        this.onItemClick = onItemClick
+    }
+
     inner class MemberViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(member: Member){
             itemView.let {
@@ -20,6 +30,7 @@ class MemberAdapter : RecyclerView.Adapter<MemberAdapter.MemberViewHolder>() {
                 it.address.text = member.address
                 it.hobby.text = member.hobby
             }
+            itemView.setOnClickListener{ onItemClick?.itemClicked(member) }
         }
     }
 
